@@ -1,13 +1,12 @@
 import React from 'react';
+import { withRouter } from 'react-router-dom';
 
-function HomePage(props) {
+function LoginPage(props) {
     return (
         <div style={{display: 'inline-block', position: 'absolute', borderTop: '1px solid #ddd', width: '100%'}}>
-            <div style={{display: 'flex', alignItems: 'center'}}>
-                home
-            </div>
+            로그인
         </div>
     );
 }
 
-export default HomePage;
+export default withRouter(LoginPage);
