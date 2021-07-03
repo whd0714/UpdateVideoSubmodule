@@ -11,6 +11,8 @@ import NavBar from "./components/views/NavBar/NavBar";
 import SiderMenu from "./components/views/NavBar/Section/SiderMenu";
 import { useState } from 'react';
 import LoginPage from "./components/views/LoginPage/LoginPage";
+import RegisterPage from "./components/views/RegisterPage/RegisterPage";
+import Template from "./components/views/Formik/Template";
 
 function App() {
 
@@ -27,6 +29,8 @@ function App() {
       <Switch>
         <Route exact path="/" component={HomePage}/>
         <Route exact path="/login" component={LoginPage}/>
+        <Route exact path="/signup" component={RegisterPage}/>
+        <Route exact path="/template" component={Template}/>
       </Switch>
     </Router>
   );
