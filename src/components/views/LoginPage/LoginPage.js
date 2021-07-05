@@ -11,8 +11,8 @@ function LoginPage(props) {
     }
 
     const validationSchema = Yup.object({
-        email: Yup.string().email('옳바르지 않은 이메일 형식입니다').required('입력필수'),
-        password: Yup.string().required('입력필수')
+        email: Yup.string().email('이메일 주소를 다시 확인해주세요.').required('필수 정보입니다.'),
+        password: Yup.string().required('필수 정보입니다.')
     })
 
     const onSubmit = values => {
@@ -20,31 +20,33 @@ function LoginPage(props) {
     }
     return (
         <div style={{display: 'inline-block', position: 'absolute', borderTop: '1px solid #ddd', width: '100%'}}>
-            <Formik
-                initialValues={initialValues}
-                validationSchema={validationSchema}
-                onSubmit={onSubmit}
-            >
-                {
-                    formik => {
-                        return <Form>
-                            <FormikControl
-                                control='input'
-                                type='email'
-                                label='Email'
-                                name='email'
-                            />
-                            <FormikControl
-                                control='input'
-                                type='password'
-                                label='Password'
-                                name='password'
-                            />
-                            <button type='submit' disabled={!formik.isValid}>로그인</button>
-                        </Form>
-                    }
-                }
-            </Formik>
+            <div style={{display: 'flex', justifyContent:'space-evenly', marginTop:'20px'}}>
+               <Formik
+                   initialValues={initialValues}
+                   validationSchema={validationSchema}
+                   onSubmit={onSubmit}
+               >
+                   {
+                       formik => {
+                           return <Form>
+                               <FormikControl
+                                   control='input'
+                                   type='email'
+                                   label='이메일'
+                                   name='email'
+                               />
+                               <FormikControl
+                                   control='input'
+                                   type='password'
+                                   label='비밀번호'
+                                   name='password'
+                               />
+                               <button type='submit' disabled={!formik.isValid}>로그인</button>
+                           </Form>
+                       }
+                   }
+               </Formik>
+           </div>
         </div>
     );
 }
