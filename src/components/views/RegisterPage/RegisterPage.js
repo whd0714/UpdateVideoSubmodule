@@ -3,9 +3,13 @@ import { withRouter } from 'react-router-dom';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import FormikControl from "../Formik/FormikControl";
-import axios from "axios";
+import { useDispatch } from "react-redux";
+import {userRegister} from "../../../_actions/user_action";
+import { message } from 'antd';
 
 function RegisterPage(props) {
+
+    const dispatch = useDispatch();
 
     const initialValues = {
         name: '',
@@ -15,7 +19,17 @@ function RegisterPage(props) {
     }
 
     const onSubmit = values => {
-
+        dispatch(userRegister(values))
+            .then(response=> {
+                if (response.payload.success) {
+                    message.success('회원가입완료')
+                    setTimeout((values)=>{
+                        props.history.push('/')
+                    },1500)
+                } else {
+                    message.error(response.payload.errorMessage)
+                }
+            })
     }
 
     const validationSchema = Yup.object({
