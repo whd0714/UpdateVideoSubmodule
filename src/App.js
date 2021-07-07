@@ -13,6 +13,7 @@ import { useState } from 'react';
 import LoginPage from "./components/views/LoginPage/LoginPage";
 import RegisterPage from "./components/views/RegisterPage/RegisterPage";
 import Template from "./components/views/Formik/Template";
+import auth from "./hoc/auth";
 
 function App() {
 
@@ -27,9 +28,9 @@ function App() {
         <NavBar changeCollapsed={changeCollapsed}/>
         <SiderMenu collapsed={collapsed}/>
       <Switch>
-        <Route exact path="/" component={HomePage}/>
-        <Route exact path="/login" component={LoginPage}/>
-        <Route exact path="/signup" component={RegisterPage}/>
+        <Route exact path="/" component={auth(HomePage, null)}/>
+        <Route exact path="/login" component={auth(LoginPage, false)}/>
+        <Route exact path="/signup" component={auth(RegisterPage, false)}/>
         <Route exact path="/template" component={Template}/>
       </Switch>
     </Router>

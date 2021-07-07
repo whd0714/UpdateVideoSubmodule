@@ -43,8 +43,8 @@ function RegisterPage(props) {
 
     return (
         <div style={{display: 'inline-block', position: 'absolute', borderTop: '1px solid #ddd',
-            width: '90%'}}>
-            <div style={{display: 'flex', justifyContent:'space-evenly', marginTop:'20px'}}>
+            width: '100%'}}>
+            <div style={{display: 'flex', justifyContent:'space-evenly', marginTop:'20px', width: '90%'}}>
                 <Formik
                     initialValues={initialValues}
                     onSubmit={onSubmit}

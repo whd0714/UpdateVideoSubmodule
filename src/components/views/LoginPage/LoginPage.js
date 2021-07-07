@@ -3,8 +3,13 @@ import { withRouter } from 'react-router-dom';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import FormikControl from "../Formik/FormikControl";
+import { useDispatch } from "react-redux";
+import {userLogin} from "../../../_actions/user_action";
 
 function LoginPage(props) {
+
+    const dispatch = useDispatch();
+
     const initialValues = {
         email: '',
         password: ''
@@ -16,11 +21,14 @@ function LoginPage(props) {
     })
 
     const onSubmit = values => {
-        console.log('Form data', values)
+        dispatch(userLogin(values))
+            .then(response=>{
+                console.log(response)
+            })
     }
     return (
         <div style={{display: 'inline-block', position: 'absolute', borderTop: '1px solid #ddd', width: '100%'}}>
-            <div style={{display: 'flex', justifyContent:'space-evenly', marginTop:'20px'}}>
+            <div style={{display: 'flex', justifyContent:'space-evenly', marginTop:'20px', width: '90%'}}>
                <Formik
                    initialValues={initialValues}
                    validationSchema={validationSchema}

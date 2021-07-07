@@ -18,7 +18,7 @@ export function userRegister(data) {
 }
 
 export function userLogin(data) {
-    const request = axios.post('api/login',
+    const request = axios.post('/api/login',
         JSON.stringify(data),
         {headers:{'content-type':'application/json; charset=UTF-8'}})
         .then(response=>response.data)
@@ -31,7 +31,8 @@ export function userLogin(data) {
 
 export function userAuth() {
     const request = axios.get('/api/auth')
-        .then(response=>response.data)
+        .then(response=>
+            response.data)
 
     return {
         type:USER_AUTH,
