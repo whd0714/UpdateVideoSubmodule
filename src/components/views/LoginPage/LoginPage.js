@@ -5,6 +5,7 @@ import * as Yup from 'yup';
 import FormikControl from "../Formik/FormikControl";
 import { useDispatch } from "react-redux";
 import {userLogin} from "../../../_actions/user_action";
+import { message } from 'antd';
 
 function LoginPage(props) {
 
@@ -23,7 +24,14 @@ function LoginPage(props) {
     const onSubmit = values => {
         dispatch(userLogin(values))
             .then(response=>{
-                console.log(response)
+                if(response.payload.success) {
+                    message.success('로그인 성공')
+                    setTimeout(()=>{
+                        props.history.push('/')
+                    },1000)
+                } else {
+                    message.error('비밀번호 또는 이메일을 확인해 주세요')
+                }
             })
     }
     return (

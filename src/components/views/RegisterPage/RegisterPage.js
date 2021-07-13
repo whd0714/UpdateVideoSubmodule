@@ -25,7 +25,7 @@ function RegisterPage(props) {
                     message.success('회원가입완료')
                     setTimeout((values)=>{
                         props.history.push('/')
-                    },1500)
+                    },1000)
                 } else {
                     message.error(response.payload.errorMessage)
                 }
