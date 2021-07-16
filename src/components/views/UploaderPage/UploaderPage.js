@@ -98,43 +98,41 @@ function UploaderPage(props) {
         );
     }*/
 
-    {
+   return (
 
-    }
+       <div style={{display: 'inline-block', position: 'absolute', borderTop: '1px solid #ddd',
+           width: '100%'}}>
 
-    return (
+           {isVideoUploadModalOn && (
+               <VideoUploadPage modalHandler={handleVideoModal} modelState={isVideoUploadModalOn}/>
+           )}
 
-        <div style={{display: 'inline-block', position: 'absolute', borderTop: '1px solid #ddd',
-            width: '100%'}}>
+           <div style={{display:'flex', flexDirection:'column'}}>
+               <Title level={4} style={{padding:'20px 25px'}}>채널 콘텐츠</Title>
+               <div>
+                   <div>
+                       필터
+                   </div>
 
-            <div style={{display:'flex', flexDirection:'column'}}>
-                <Title level={4} style={{padding:'20px 25px'}}>채널 콘텐츠</Title>
-                <div>
-                    <div>
-                        필터
-                    </div>
+                   <Button onClick={handleVideoModal}>동영상 올리기</Button>
 
-                    <Button onClick={handleVideoModal}>동영상 올리기</Button>
+                   <Divider />
 
-                    <Divider />
 
-                    {isVideoUploadModalOn && (
-                        <VideoUploadPage modelState={isVideoUploadModalOn}/>
-                    )}
+                   <div>
+                       <Table
+                           rowSelection={{
+                               rowSelection
+                           }}
+                           columns={columns}
+                           dataSource={data}
+                       />
+                   </div>
+               </div>
+           </div>
+       </div>
+   );
 
-                    <div>
-                        <Table
-                            rowSelection={{
-                                rowSelection
-                            }}
-                            columns={columns}
-                            dataSource={data}
-                        />
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
 }
 
 export default UploaderPage;

@@ -1,0 +1,8 @@
+.closeBox {
+    color: #9c9c9c;
+}
+.closeBtn:hover {
+    cursor: pointer;
+    color: black;
+}
+
