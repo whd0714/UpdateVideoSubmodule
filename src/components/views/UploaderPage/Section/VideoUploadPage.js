@@ -1,11 +1,51 @@
 import React from 'react';
+import {withRouter} from 'react-router-dom'
 import { CloseOutlined } from '@ant-design/icons';
 import { Tooltip, Typography, Divider } from 'antd';
 import './VideoUploadCss.css';
+import { Formik, Form } from 'formik';
+import FormikControl from '../../Formik/FormikControl';
+import { message } from 'antd';
+import * as Yup from 'yup';
+import Dropzone from 'react-dropzone';
+import {PlusOutlined} from '@ant-design/icons';
 
 const { Title } = Typography;
 
 function VideoUploadPage(props) {
+
+    const initialValues = {
+        file: '',
+        title: '',
+        description: '',
+        category: '',
+        access: '',
+    }
+
+    const categoryOptions = [
+        {key:'카테고리를 선택해주세요', value: ''},
+        {key: 'MUSIC', value: 'MUSIC'},
+        {key: 'SPORTS', value: 'SPORTS'},
+        {key: 'GAME', value: 'GAME'},
+    ]
+
+    const accessOptions = [
+        {key:'공개 여부를 선택해주세요', value: ''},
+        {key: 'PRIVATE', value: 'PRIVATE'},
+        {key: 'PUBLIC', value: 'PUBLIC'},
+    ]
+
+    const onSubmit = values => {
+        console.log(values);
+    }
+
+    const validationSchema = Yup.object({
+        file: Yup.mixed().required('동영상은 필수입니다'),
+        title: Yup.string().required('필수 정보입니다.'),
+        description: Yup.string().required('필수 정보입니다.'),
+        category: Yup.string().required('필수 정보입니다.'),
+        access: Yup.string().required('필수 정보입니다.')
+    })
 
     const onHandCloseHandler = () => {
 
@@ -29,6 +69,59 @@ function VideoUploadPage(props) {
 
                     <Divider></Divider>
 
+                   <div style={{display: 'flex', padding:'1rem 15rem'}}>
+                       <Formik
+                            initialValues={initialValues}
+                            onSubmit={onSubmit}
+                            validationSchema={validationSchema}
+                       >
+                           {
+                               formik => {
+                                   return <div>
+                                       <Form>
+                                          <div>
+                                              <Dropzone
+                                                  onDrop
+                                                  multiple
+                                                  maxSize
+                                              >
+                                                  {({ getRootProps, getInputProps}) => (
+                                                      <div style={{width:'300px', height:'240px',border:'1px solid #ddd',
+                                                          justifyContent:'center', alignItems:'center', display:'flex'}} {...getRootProps()}>
+                                                          <input {...getInputProps()}/>
+                                                          <PlusOutlined style={{fontSize:'3rem'}}></PlusOutlined>
+                                                      </div>
+                                                  )}
+                                              </Dropzone>
+                                          </div>
+                                           <div>
+                                               <FormikControl
+                                                    control='textarea'
+                                                    type='textarea'
+                                                    label='Description'
+                                                    name='description'
+                                               />
+                                               <FormikControl
+                                                    control='select'
+                                                    label='Category'
+                                                    name='category'
+                                                    options={categoryOptions}
+                                               />
+                                               <FormikControl
+                                                   control='select'
+                                                   label='Access'
+                                                   name='access'
+                                                   options={accessOptions}
+                                               />
+
+                                               <button type='submit' disabled={!formik.isValid}>동영상등록</button>
+                                           </div>
+                                       </Form>
+                                   </div>
+                               }
+                           }
+                       </Formik>
+                   </div>
                </div>
 
            </div>
@@ -36,4 +129,4 @@ function VideoUploadPage(props) {
     );
 }
 
-export default VideoUploadPage;
+export default withRouter(VideoUploadPage);
