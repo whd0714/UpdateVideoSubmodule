@@ -9,13 +9,14 @@ import { message } from 'antd';
 import * as Yup from 'yup';
 import Dropzone from 'react-dropzone';
 import {PlusOutlined} from '@ant-design/icons';
+import axios from "axios";
 
 const { Title } = Typography;
 
 function VideoUploadPage(props) {
 
     const initialValues = {
-        file: '',
+        file: [],
         title: '',
         description: '',
         category: '',
@@ -52,6 +53,18 @@ function VideoUploadPage(props) {
         props.modalHandler(props.modelState)
     }
 
+    const onDrop =(files) => {
+        let formData =new FormData;
+        formData.append("file", files[0]);
+
+        axios.post('/api/upload/server/video',
+            formData,
+            {headers: {'content-type' : 'multipart/form-data; charset=UTF-8'}})
+            .then(response => {
+                console.log(response)
+            })
+    }
+
     return (
         <div style={{position:'fixed',width:'100%', height:'100%', zIndex:'1', top:'0', left:0, display:'flex', justifyItems:'center', alignItems:'center',
             backgroundColor:'white', justifyContent:'center', boxShadow:'0 2px 7px rgba(0,0,0,0.5)', background:'rgba(0, 0, 0, 0.7)'}}>
@@ -81,9 +94,10 @@ function VideoUploadPage(props) {
                                        <Form>
                                           <div>
                                               <Dropzone
-                                                  onDrop
-                                                  multiple
-                                                  maxSize
+                                                  onDrop={onDrop}
+                                                  multiple={false}
+                                                  maxSize={1000000000}
+                                                  name="file"
                                               >
                                                   {({ getRootProps, getInputProps}) => (
                                                       <div style={{width:'300px', height:'240px',border:'1px solid #ddd',
@@ -96,10 +110,16 @@ function VideoUploadPage(props) {
                                           </div>
                                            <div>
                                                <FormikControl
-                                                    control='textarea'
-                                                    type='textarea'
-                                                    label='Description'
-                                                    name='description'
+                                                    control='input'
+                                                    type='input'
+                                                    label='Title'
+                                                    name='title'
+                                               />
+                                               <FormikControl
+                                                   control='input'
+                                                   type='textarea'
+                                                   label='Description'
+                                                   name='description'
                                                />
                                                <FormikControl
                                                     control='select'
@@ -114,7 +134,8 @@ function VideoUploadPage(props) {
                                                    options={accessOptions}
                                                />
 
-                                               <button type='submit' disabled={!formik.isValid}>동영상등록</button>
+                                              {/* <button type='submit' disabled={!formik.isValid}>동영상등록</button>*/}
+                                               <button type='submit'>동영상등록</button>
                                            </div>
                                        </Form>
                                    </div>
