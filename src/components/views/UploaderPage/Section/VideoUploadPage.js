@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {withRouter} from 'react-router-dom'
 import { CloseOutlined } from '@ant-design/icons';
 import { Tooltip, Typography, Divider } from 'antd';
@@ -7,16 +7,24 @@ import { Formik, Form } from 'formik';
 import FormikControl from '../../Formik/FormikControl';
 import { message } from 'antd';
 import * as Yup from 'yup';
-import Dropzone from 'react-dropzone';
+import Dropzone, {useDropzone} from 'react-dropzone';
 import {PlusOutlined} from '@ant-design/icons';
 import axios from "axios";
+import Input from "../../Formik/Input";
 
 const { Title } = Typography;
 
+
+
 function VideoUploadPage(props) {
 
+    const [ filename, setFileName ] = useState("");
+    const [ filepath, setFilepath ] = useState("");
+    const [ duration, setDuration ] = useState(0);
+    const [ thumbnailPath, setThumbnailPath ] = useState("");
+
     const initialValues = {
-        file: [],
+        file: null,
         title: '',
         description: '',
         category: '',
@@ -53,15 +61,41 @@ function VideoUploadPage(props) {
         props.modalHandler(props.modelState)
     }
 
-    const onDrop =(files) => {
+    const onDrop =(value) => {
+        console.log(value.target.files[0])
         let formData =new FormData;
-        formData.append("file", files[0]);
+        formData.append("file", value.target.files[0]);
 
         axios.post('/api/upload/server/video',
             formData,
             {headers: {'content-type' : 'multipart/form-data; charset=UTF-8'}})
             .then(response => {
-                console.log(response)
+                if(response.data.success) {
+                    setFileName(response.data.filename)
+
+                    console.log(response.data.filename)
+                    console.log(response.data.filepath)
+
+                    let thumbnailData = {
+                        filename: response.data.filename,
+                        filepath: response.data.filepath
+                    }
+
+                    axios.post('/api/upload/server/thumbnail',
+                        JSON.stringify(thumbnailData),
+                        {headers:{'content-type':'application/json; charset=UTF-8'}})
+                        .then(response => {
+                            if(response.data.success) {
+                                setFilepath(response.data.filepath)
+                                setDuration(response.data.duration)
+                                setThumbnailPath(response.data.thumbnailPath)
+                            } else {
+                                message.error('썸네일 생성에 실패했습니다');
+                            }
+                        })
+                } else {
+                    message.error('동영상을 서버에 저장하는데 실패했습니다');
+                }
             })
     }
 
@@ -70,19 +104,18 @@ function VideoUploadPage(props) {
             backgroundColor:'white', justifyContent:'center', boxShadow:'0 2px 7px rgba(0,0,0,0.5)', background:'rgba(0, 0, 0, 0.7)'}}>
             alignContent
            <div style={{position:'absolute', background:'white', width:'80%'}}>
-               <div className="closeBox" style={{padding:'15px 15px', float:'right', fontSize:'20px', zIndex:'10000'}}>
+               <div className="closeBox" style={{padding:'15px 15px 0 0', float:'right', fontSize:'20px', zIndex:'10000'}}>
                    <Tooltip placement='bottom' title='닫기' zIndex='2' arrowPointAtCenter>
                        <CloseOutlined onClick={onHandCloseHandler} className="closeBtn"/>
                    </Tooltip>
                </div>
-
-
-               <div>
-                   <Title style={{padding:'20px 0 0 15px', margin:'0', display:'inline-block', alignSelf:'center'}} level={3}>동영상 업로드</Title>
-
-                    <Divider></Divider>
-
-                   <div style={{display: 'flex', padding:'1rem 15rem'}}>
+               <Title style={{padding:'0 0 0 15px', margin:'0', display:'inline-block',
+                   alignSelf:'center', width:'100%'}} level={3}>
+                   동영상 업로드
+               </Title>
+               <Divider></Divider>
+               <div style={{display:'inline-block'}}>
+                   <div style={{display: 'flex', padding:'1rem 12rem'}}>
                        <Formik
                             initialValues={initialValues}
                             onSubmit={onSubmit}
@@ -92,7 +125,7 @@ function VideoUploadPage(props) {
                                formik => {
                                    return <div>
                                        <Form>
-                                          <div>
+                                         {/* <div>
                                               <Dropzone
                                                   onDrop={onDrop}
                                                   multiple={false}
@@ -107,8 +140,19 @@ function VideoUploadPage(props) {
                                                       </div>
                                                   )}
                                               </Dropzone>
-                                          </div>
+                                          </div>*/}
+
                                            <div>
+                                               {/*<FormikControl
+                                                   control='input'
+                                                   type='file'
+                                                   label='File'
+                                                   name='file'
+                                               />*/}
+                                               <Input
+                                                   type="file"
+                                                   name='file1'
+                                                   onChange={onDrop}/>
                                                <FormikControl
                                                     control='input'
                                                     type='input'
@@ -144,6 +188,14 @@ function VideoUploadPage(props) {
                        </Formik>
                    </div>
                </div>
+               <div style={{display:'inline-block'}}>
+                   {/*Thumbnail area*/}
+                   {thumbnailPath &&
+                   <img src={`http://localhost:8080/${thumbnailPath}`}
+                        style={{width:'360px', height:'288px',position:'absolute'}} alt=""/>
+                   }
+               </div>
+
 
            </div>
         </div>
