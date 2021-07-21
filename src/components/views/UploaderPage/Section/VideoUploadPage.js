@@ -11,17 +11,25 @@ import Dropzone, {useDropzone} from 'react-dropzone';
 import {PlusOutlined} from '@ant-design/icons';
 import axios from "axios";
 import Input from "../../Formik/Input";
+import {useSelector} from "react-redux";
 
 const { Title } = Typography;
 
-
-
 function VideoUploadPage(props) {
+
+    const user = useSelector(state => state.user);
 
     const [ filename, setFileName ] = useState("");
     const [ filepath, setFilepath ] = useState("");
     const [ duration, setDuration ] = useState(0);
     const [ thumbnailPath, setThumbnailPath ] = useState("");
+
+    const changeValue = (filename, filepath, duration, thumbnailPath) => {
+        setFileName(filename)
+        setFilepath(filepath)
+        setDuration(duration)
+        setThumbnailPath(thumbnailPath)
+    }
 
     const initialValues = {
         file: null,
@@ -45,11 +53,37 @@ function VideoUploadPage(props) {
     ]
 
     const onSubmit = values => {
-        console.log(values);
+
+        let videoData = {
+            filename: filename,
+            filepath: filepath,
+            duration: duration,
+            thumbnailPath: thumbnailPath,
+            memberId: user.auth.data.memberId,
+            title: values.title,
+            description: values.description,
+            access: values.access,
+            category: values.category
+        }
+
+        axios.post("/api/video/upload",
+            JSON.stringify(videoData),
+            {headers:{'content-type' : 'application/json; charset=UTF-8'}})
+            .then(response=> {
+                if(response.data.success) {
+                    message.success('동영상을 등록했습니다.')
+                    setTimeout(()=> {
+                        window.location.reload();
+                    },500)
+                } else {
+                    message.error('동영상을 등록하는데 실패했습니다.')
+                }
+            })
+
     }
 
     const validationSchema = Yup.object({
-        file: Yup.mixed().required('동영상은 필수입니다'),
+        //file: Yup.mixed().required('동영상은 필수입니다'),
         title: Yup.string().required('필수 정보입니다.'),
         description: Yup.string().required('필수 정보입니다.'),
         category: Yup.string().required('필수 정보입니다.'),
@@ -59,44 +93,6 @@ function VideoUploadPage(props) {
     const onHandCloseHandler = () => {
 
         props.modalHandler(props.modelState)
-    }
-
-    const onDrop =(value) => {
-        console.log(value.target.files[0])
-        let formData =new FormData;
-        formData.append("file", value.target.files[0]);
-
-        axios.post('/api/upload/server/video',
-            formData,
-            {headers: {'content-type' : 'multipart/form-data; charset=UTF-8'}})
-            .then(response => {
-                if(response.data.success) {
-                    setFileName(response.data.filename)
-
-                    console.log(response.data.filename)
-                    console.log(response.data.filepath)
-
-                    let thumbnailData = {
-                        filename: response.data.filename,
-                        filepath: response.data.filepath
-                    }
-
-                    axios.post('/api/upload/server/thumbnail',
-                        JSON.stringify(thumbnailData),
-                        {headers:{'content-type':'application/json; charset=UTF-8'}})
-                        .then(response => {
-                            if(response.data.success) {
-                                setFilepath(response.data.filepath)
-                                setDuration(response.data.duration)
-                                setThumbnailPath(response.data.thumbnailPath)
-                            } else {
-                                message.error('썸네일 생성에 실패했습니다');
-                            }
-                        })
-                } else {
-                    message.error('동영상을 서버에 저장하는데 실패했습니다');
-                }
-            })
     }
 
     return (
@@ -125,34 +121,18 @@ function VideoUploadPage(props) {
                                formik => {
                                    return <div>
                                        <Form>
-                                         {/* <div>
-                                              <Dropzone
-                                                  onDrop={onDrop}
-                                                  multiple={false}
-                                                  maxSize={1000000000}
-                                                  name="file"
-                                              >
-                                                  {({ getRootProps, getInputProps}) => (
-                                                      <div style={{width:'300px', height:'240px',border:'1px solid #ddd',
-                                                          justifyContent:'center', alignItems:'center', display:'flex'}} {...getRootProps()}>
-                                                          <input {...getInputProps()}/>
-                                                          <PlusOutlined style={{fontSize:'3rem'}}></PlusOutlined>
-                                                      </div>
-                                                  )}
-                                              </Dropzone>
-                                          </div>*/}
-
                                            <div>
-                                               {/*<FormikControl
-                                                   control='input'
+                                               <FormikControl
+                                                   changeValue={changeValue}
+                                                   control='file'
                                                    type='file'
                                                    label='File'
                                                    name='file'
-                                               />*/}
-                                               <Input
+                                               />
+                                               {/*<Input
                                                    type="file"
                                                    name='file1'
-                                                   onChange={onDrop}/>
+                                                   onChange={onDrop}/>*/}
                                                <FormikControl
                                                     control='input'
                                                     type='input'
@@ -178,8 +158,9 @@ function VideoUploadPage(props) {
                                                    options={accessOptions}
                                                />
 
-                                              {/* <button type='submit' disabled={!formik.isValid}>동영상등록</button>*/}
+                                               {/*<button type='submit' disabled={!formik.isValid}>동영상등록</button>*/}
                                                <button type='submit'>동영상등록</button>
+
                                            </div>
                                        </Form>
                                    </div>
@@ -195,8 +176,6 @@ function VideoUploadPage(props) {
                         style={{width:'360px', height:'288px',position:'absolute'}} alt=""/>
                    }
                </div>
-
-
            </div>
         </div>
     );
